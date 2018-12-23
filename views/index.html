@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Personal Library</title>
+    <link id="favicon" rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Page_issue_icon_-_low.svg/32px-Page_issue_icon_-_low.svg.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500" rel="stylesheet">
+    <style>
+      html { height:100%; }
+      
+      body {
+        height:100%;
+        font-family: 'Montserrat', sans-serif;
+      }
+      
+      nav .input-group > .form-control { width:20rem; }
+      
+      .ht-2 { height:4rem; }
+      
+      .ta-w-xl { width:25rem; }
+      
+      .input-group-text { font-weight:700; }
+      
+      .route-link:hover {
+        text-decoration:none;
+        background-color:#FFEF92;
+      }
+      
+      .book-link:hover { text-decoration:none; }
+      
+      .show-notify {
+        /*height:2rem;*/
+        background-color:rgba(220,53,69,1);
+        color:#FFF;
+        position:relative;
+        animation:slideDown 500ms linear 1 forwards;
+      }
+      
+      .hide-notify {}
+      
+      @keyframes slideDown {
+        from { height:0;    }
+        to   { height:2rem; }
+      }
+      
+      @keyframes slideUp {
+        from { height:2rem; }
+        to   { height:0;    }
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div id="application">
+      <div class="loading">
+        Loading…
+      </div>
+    </div>
+  </body>
+  <script src="/client.js"></script>
+</html>
