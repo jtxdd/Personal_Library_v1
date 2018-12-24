@@ -56,9 +56,7 @@ class App extends React.Component {
     fetch('/api/books').then(res => res.json())
       .then(result => {
         result.docs.forEach(el => el.key = el._id + '_' + this.handleKeyGen());
-        
-        result.docs.forEach(el => el.route = '/api/books/' + el.title.replace(/\s/g, '_'));
-      
+        result.docs.forEach(el => el.route = '/api/books/' + el._id);
         this.setState({ books: result.docs });
     });
   }
@@ -72,7 +70,7 @@ class App extends React.Component {
         
         if (inserted) {
           result.docs.key = result.docs._id + '_' + this.handleKeyGen();
-          result.docs.route = '/api/books/' + result.docs.title.replace(/\s/g, '_');
+          result.docs.route = '/api/books/' + result.docs._id;
           
           this.setState({
             books: [...books, result.docs],
@@ -86,17 +84,24 @@ class App extends React.Component {
   }
   
   postComment(url, options) {
-    let books = this.state.books;
+    let { books, selected } = this.state;
+    
     let bookId = JSON.parse(options.body).book._id;
     let bookIndex = books.findIndex(el => el._id === bookId);
-    let selected = this.state.selected;
+    
     fetch(url, options)
       .then(res => res.json())
       .then(result => {
         if (result.docs) {
           books[bookIndex].comments = result.docs.comments;
           selected.comments = result.docs.comments;
-          this.setState({ books: books, selected: selected, message: result.message });
+          
+          this.setState({
+            books: books, 
+            selected: selected, 
+            message: result.message,
+            comment: ''
+          });
         } else {
           this.setState({ message: result.message });
         }
@@ -109,25 +114,20 @@ class App extends React.Component {
     let url = '/api/books';
     
     let options = {
-      method: '',
+      method: 'POST',
       body: {},
       headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}
     };
     
     let submit = {
       newBook:() => {
-        options.method = 'POST';
         options.body = JSON.stringify({title: this.state.title});
-        
         this.postBook(url, options);
       },
       
       newComment:() => {
         url = this.props.location.pathname;
-        
-        options.method = 'POST';
         options.body = JSON.stringify({comment: this.state.comment, book: this.state.selected});
-        
         this.postComment(url, options);
       }
     };
@@ -138,12 +138,9 @@ class App extends React.Component {
   handleClick(e) {
     e.preventDefault();
     
-    let id = e.currentTarget.id.split('-');
-    let title = id[1].replace(/_/g, ' ');
-    let selected = this.state.books.find(el => el.title === title);
-    
+    let id = e.currentTarget.id.split('-')[1];
+    let selected = this.state.books.find(el => el._id === id);
     this.setState({ selected: selected });
-    
     this.props.history.push(selected.route);
   }
   
@@ -153,7 +150,7 @@ class App extends React.Component {
     let book = this.state.books.find(el => el.title === title);
     let books = this.state.books.filter(el => el._id !== book._id);
     
-    let url = '/api/books/' + id[1];
+    let url = '/api/books/' + book._id;
     let confirm = window.confirm(`Deleting ${title}`);
     
     let options = {
@@ -179,7 +176,7 @@ class App extends React.Component {
     let url = '/api/books';
     let options = {
       method: 'DELETE',
-      body: {},
+      body: JSON.stringify({}),
       headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}
     };
     let confirm = window.confirm('Deleting all books from library');
