@@ -2245,7 +2245,7 @@ var DataRow = function DataRow(props) {
         { className: 'col-sm-11 route-link' },
         _react2.default.createElement(
           _reactRouterDom.Link,
-          { id: 'book-' + el.title.replace(/\s/g, '_'), to: el.route, className: 'route-link', onClick: props.click },
+          { id: 'book-' + el._id, to: el.route, className: 'route-link', onClick: props.click },
           _react2.default.createElement(
             'div',
             { className: 'row book-link justify-content-between border-bottom' },
@@ -2670,11 +2670,9 @@ var App = function (_React$Component) {
         result.docs.forEach(function (el) {
           return el.key = el._id + '_' + _this2.handleKeyGen();
         });
-
         result.docs.forEach(function (el) {
-          return el.route = '/api/books/' + el.title.replace(/\s/g, '_');
+          return el.route = '/api/books/' + el._id;
         });
-
         _this2.setState({ books: result.docs });
       });
     }
@@ -2691,7 +2689,7 @@ var App = function (_React$Component) {
 
         if (inserted) {
           result.docs.key = result.docs._id + '_' + _this3.handleKeyGen();
-          result.docs.route = '/api/books/' + result.docs.title.replace(/\s/g, '_');
+          result.docs.route = '/api/books/' + result.docs._id;
 
           _this3.setState({
             books: [].concat(_toConsumableArray(books), [result.docs]),
@@ -2708,19 +2706,29 @@ var App = function (_React$Component) {
     value: function postComment(url, options) {
       var _this4 = this;
 
-      var books = this.state.books;
+      var _state = this.state,
+          books = _state.books,
+          selected = _state.selected;
+
+
       var bookId = JSON.parse(options.body).book._id;
       var bookIndex = books.findIndex(function (el) {
         return el._id === bookId;
       });
-      var selected = this.state.selected;
+
       fetch(url, options).then(function (res) {
         return res.json();
       }).then(function (result) {
         if (result.docs) {
           books[bookIndex].comments = result.docs.comments;
           selected.comments = result.docs.comments;
-          _this4.setState({ books: books, selected: selected, message: result.message });
+
+          _this4.setState({
+            books: books,
+            selected: selected,
+            message: result.message,
+            comment: ''
+          });
         } else {
           _this4.setState({ message: result.message });
         }
@@ -2736,25 +2744,20 @@ var App = function (_React$Component) {
       var url = '/api/books';
 
       var options = {
-        method: '',
+        method: 'POST',
         body: {},
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
       };
 
       var submit = {
         newBook: function newBook() {
-          options.method = 'POST';
           options.body = JSON.stringify({ title: _this5.state.title });
-
           _this5.postBook(url, options);
         },
 
         newComment: function newComment() {
           url = _this5.props.location.pathname;
-
-          options.method = 'POST';
           options.body = JSON.stringify({ comment: _this5.state.comment, book: _this5.state.selected });
-
           _this5.postComment(url, options);
         }
       };
@@ -2766,14 +2769,11 @@ var App = function (_React$Component) {
     value: function handleClick(e) {
       e.preventDefault();
 
-      var id = e.currentTarget.id.split('-');
-      var title = id[1].replace(/_/g, ' ');
+      var id = e.currentTarget.id.split('-')[1];
       var selected = this.state.books.find(function (el) {
-        return el.title === title;
+        return el._id === id;
       });
-
       this.setState({ selected: selected });
-
       this.props.history.push(selected.route);
     }
   }, {
@@ -2790,7 +2790,7 @@ var App = function (_React$Component) {
         return el._id !== book._id;
       });
 
-      var url = '/api/books/' + id[1];
+      var url = '/api/books/' + book._id;
       var confirm = window.confirm('Deleting ' + title);
 
       var options = {
@@ -2819,7 +2819,7 @@ var App = function (_React$Component) {
       var url = '/api/books';
       var options = {
         method: 'DELETE',
-        body: {},
+        body: JSON.stringify({}),
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
       };
       var confirm = window.confirm('Deleting all books from library');

@@ -31,7 +31,7 @@ const DataRow = (props) => {
       
       <div className="col-sm-11 route-link">
         
-        <Link id={'book-' + el.title.replace(/\s/g, '_')} to={el.route} className="route-link" onClick={props.click}>
+        <Link id={'book-' + el._id} to={el.route} className="route-link" onClick={props.click}>
           <div className="row book-link justify-content-between border-bottom">
             <div className="col-sm-2">{el._id.slice(-4)}</div>
             <div className="col-sm-8">{el.title}</div>
